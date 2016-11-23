@@ -1,0 +1,4 @@
+Find SURF MATLAB code
+Find HOG MATLAB code
+Create transformation script for CIFAR data (see CIFAR gist on GitHub)
+
