@@ -1,9 +1,11 @@
-This repository is dedicated to the Virginia Tech ECE4424/CS4824 machine learning project.
+This repository is dedicated to the Virginia Tech ECE4424/CS4824 machine learning project for the Fall 2016 semester.
 
 # Authors
-Joshua Knestaut
-Cheick Berthe
-Matthew Stevens
+Joshua Knestaut (kjosh9@vt.edu)
+
+Cheick Berthe (cab25004@vt.edu)
+
+Matthew Stevens (smatth25@vt.edu)
 
 # Overview
 This project aims to show that basic machine learning algorithms can be viable
