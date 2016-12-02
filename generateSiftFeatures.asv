@@ -6,18 +6,16 @@ function [siftfeatures] = generateSiftFeatures(data)
     [nimages,~] = size(data);
     
     % Pre-allocate feature matrix for efficiency
-    siftfeatures = cell(nimages);
-    frames = cell(nimages);
-    % TODO: More preallocation
+    siftfeatures = zeros([nimages nfeatures]); 
 
     % Load first image and compute features
     % Future calls to LMgist will be faster
     img = rgb2gray(reshape(data(1,:),32,32,3));
-    [frames{1},siftfeatures{1},gss(1,:),dogss(1,:)] = sift(img, 'Verbosity', 1 );
+    [frames(1,:),siftfeatures{1},gss(1,:),dogss(1,:)] = sift(img, 'Verbosity', 1 );
     
     % Compute features for remaining images
     for i = 2:nimages
         img = rgb2gray(reshape(data(i,:),32,32,3));
-        [frames{i},siftfeatures{i},gss(i,:),dogss(i,:)] = sift(img, 'Verbosity', 1 );
+        [frames(i,:),siftfeatures{i},gss(i,:),dogss(i,:)] = sift(img, 'Verbosity', 1 );
     end
 end
