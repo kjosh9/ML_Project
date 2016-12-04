@@ -1,4 +1,4 @@
-function [result] = multisvm(TrainingSet,GroupTrain,TestSet)
+function [result] = multisvm(TrainingSet,GroupTrain,TestSet,Kernel)
 %Models a given training set with a corresponding group vector and 
 %classifies a given test set using an SVM classifier according to a 
 %one vs. all relation. 
@@ -18,7 +18,7 @@ parfor i=1:numClasses
     %Vectorized statement that binarizes Group
     %where 1 is the current class and 0 is all other classes
     G1vAll=(GroupTrain==u(i));
-    models(i) = svmtrain(TrainingSet,G1vAll,'kernel_function','linear', 'options', options);
+    models(i) = svmtrain(TrainingSet,G1vAll,'kernel_function',Kernel, 'options', options);
     fprintf('Trained classifier %d', i)
 end
 
