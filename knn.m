@@ -1,48 +1,65 @@
+function predlabels = knn(traindata, trainlabels, testdata, options)
+% Predicts data labels using the k-Nearest Neighbors algorithm.
+% traindata: Data used to train the algorithm. Must be row oriented
+% trainlabels: Labels associated with the training data
+% testdata: The data to be tested. Must have the same second dimension as traindata
+% options: Options to change how KNN is run
+%   - distFun: Required if D is not given, function given to pdist2
+%   - k: Number of neighbors to evaluate
+%   - [D]: Precomputed distance matrix
+%   - [weightFun]: Weighting function that takes distance as an argument
 
-%testfeatgist - testdata
-%trainlabels - trainlabels
-%trainfeatgist - traindata
-%k - number of nearest neighbors
-%f - distance metric
-%D - ?
-
-
-%this really only works with euclidean distance
-
-function predlabels = knn(traindata, trainlabels, testdata, k, f, D)
+    % Set some useful variables
+    ntest = size(testdata, 1);
+    labels = unique(trainlabels);
+    nlabels = size(labels);
+    nlabels = nlabels(1);
+    k = options.k;
+    if isfield(options, 'weightFun')
+        weightFun = options.weightFun;
+    else
+        weightFun = @(dist) 1;
+    end
+    if isfield(options, 'D')
+        D = options.D;
+    end
     
-
-    %calculate the dissimilarity of the test point x onto each of the train points    
-    l1 = size(testdata, 1);
-    predlabels = zeros(l1,1);
     
-    for i = 1:l1
+    % Preallocate for efficiency
+    predlabels = zeros(ntest, 1);
+    
+    % Calculate pairwise distances
+    if exist('D', 'var') == 0
+        fprintf('Calculating distances...\n')
+        distFun = options.distFun;
+        if size(varargin) > 0
+            tic
+            D = pdist2(traindata, testdata, distFun, varargin);
+            toc
+        else
+            tic
+            D = pdist2(traindata, testdata, distFun);
+            toc
+        end
+    end
+    
+    % Loop through each test data point
+    for i = 1:ntest
+        % Sort the distances ascending
+        [dists, indices] = sort(D(:, i));
         
-        Dist = pdist2(testdata(i,:), traindata, f);
-               
-        %find the train point x^n wich is nearest to x
+        % Preallocate votes array
+        votes = zeros(nlabels, 1);
         
-        %sort the stuff to be in an order of least to greatest
-        [sortdist, distindex] = sort(Dist);
+        % Aggregate votes from k lowest distance neighbors
+        for j = 1:k
+            neighborLabel = trainlabels(indices(j));
+            weight = weightFun(dists(j));
+            votes(neighborLabel + 1) = votes(neighborLabel + 1) + weight;
+        end
         
-        classes = zeros(k,1);
-        
-        %find the i3th closest index
-        %put in kindex
-            
-        classes(1:k,1) = trainlabels(distindex(1,1:k),1);
-        
-        
-        %assign the class label
-        %find the most common class of kindex and assign to predlabels(i)
-        predlabels(i,1) = mode(classes);
-        
-        %in the case that there are two or more nearest neighbours with
-        %different class labels, the most numerous class is chosen.
-        %maybe not instantiate this
-               
+        % Get the predicted label
+        [~, label] = max(votes);
+        predlabels(i) = label - 1;
     end
 end
-
-
-
