@@ -11,15 +11,15 @@ function [result] = multisvm(TrainingSet,GroupTrain,TestSet)
 u=unique(GroupTrain);
 numClasses=length(u);
 result = zeros(length(TestSet(:,1)),1);
+options.MaxIter = 1000000;
 
 %build models
-for k=1:numClasses
+parfor i=1:numClasses
     %Vectorized statement that binarizes Group
     %where 1 is the current class and 0 is all other classes
-    G1vAll=(GroupTrain==u(k));
-    display(k)
-    options.MaxIter = 1000000;
-    models(k) = svmtrain(TrainingSet,G1vAll,'kernel_function','rbf', 'options', options);
+    G1vAll=(GroupTrain==u(i));
+    display(i)
+    models(i) = svmtrain(TrainingSet,G1vAll,'kernel_function','linear', 'options', options);
 end
 
 %classify test cases
