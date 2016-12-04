@@ -18,12 +18,12 @@ parfor i=1:numClasses
     %Vectorized statement that binarizes Group
     %where 1 is the current class and 0 is all other classes
     G1vAll=(GroupTrain==u(i));
-    display(i)
     models(i) = svmtrain(TrainingSet,G1vAll,'kernel_function','linear', 'options', options);
+    fprintf('Trained classifier %d', i)
 end
 
 %classify test cases
-for j=1:size(TestSet,1)
+parfor j=1:size(TestSet,1)
     for k=1:numClasses
         if(svmclassify(models(k),TestSet(j,:))) 
             break;
