@@ -44,3 +44,24 @@ save ./predictions/cosine_predictions.mat predictions
 
 % Clear city distances
 clearvars cosineDistance
+
+% Load precomputed cosine distance
+fprintf('Loading euclidean distance matrix...\n')
+euclideanDistance = pdist2(features(1:40000, :), features(40001:50000, :), 'euclidean');
+
+% Test city distance over k and save error rates
+fprintf('Testing euclidean distance for k = 1-100\n')
+errors = zeros(100, 1);
+predictions = zeros(100, 10000);
+parfor k = 1:100
+    preds = knn(features(1:40000, :), labels(1:40000), features(40001:50000, :), struct('k', k, 'D', euclideanDistance));
+    errors(k, 1) = mean(preds ~= labels(40001:50000));
+    predictions(k, :) = preds';
+end
+
+% Save city error
+save ./predictions/euclidean_error.mat errors
+save ./predictions/euclidean_predictions.mat predictions
+
+% Clear city distances
+clearvars euclideanDistance
